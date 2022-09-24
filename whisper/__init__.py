@@ -6,6 +6,7 @@ import warnings
 from typing import List, Optional, Union
 
 import torch
+import torch.nn as nn
 from tqdm import tqdm
 
 from .audio import load_audio, log_mel_spectrogram, pad_or_trim
@@ -105,6 +106,9 @@ def load_model(name: str, device: Optional[Union[str, torch.device]] = None, dow
 
     dims = ModelDimensions(**checkpoint["dims"])
     model = Whisper(dims)
+    if torch.cuda.device_count() > 1
+        print("Let's use", torch.cuda.device_count(), "GPUs!")
+        model = nn.DataParallel(model)
     model.load_state_dict(checkpoint["model_state_dict"])
 
     return model.to(device)
